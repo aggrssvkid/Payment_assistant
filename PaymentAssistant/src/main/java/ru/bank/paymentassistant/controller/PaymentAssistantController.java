@@ -2,7 +2,6 @@ package ru.bank.paymentassistant.controller;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,12 +16,12 @@ public class PaymentAssistantController {
 
     @PostMapping("/api/client/new")
     @ResponseBody
-    public String addJsonCode(@RequestBody Client newClient) {
-        return "ok";
+    public ResponseEntity<String> addJsonCode(@RequestBody Client newClient) {
+        return saveDataOnOtherServer(searchOpenAPI(newClient));
     }
 
-    @GetMapping("/api/client/new")
-    public ResponseEntity<String> searchOpenAPI() {
+//    @GetMapping("/api/client/new")
+    public Client searchOpenAPI(Client client) {
         // request url
         String url = "http://localhost:8090/openapi";
 
@@ -35,7 +34,7 @@ public class PaymentAssistantController {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
 // create a post object
-        Client client = new Client(1L, "Alex", "Wolf", "88005353535");
+//        Client client = new Client(1L, "Alex", "Wolf", "88005353535");
 
 // build the request
         HttpEntity<Client> request = new HttpEntity<>(client, headers);
@@ -53,7 +52,7 @@ public class PaymentAssistantController {
         }
 
         client.setData(response.getBody());
-        return saveDataOnOtherServer(client);
+        return client;
     }
 
     public ResponseEntity<String> saveDataOnOtherServer(Client client) {
